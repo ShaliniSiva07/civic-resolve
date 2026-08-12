@@ -81,6 +81,13 @@ def add_cors(resp):
 
     return resp
 
+@app.route('/')
+def home():
+    return jsonify({
+        'status': 'ok',
+        'message': 'Civic Resolve Backend is running'
+    }), 200
+
 # ─── DATABASE ─────────────────────────────────────────────────────────────────
 def get_db():
     if 'db' not in g:
