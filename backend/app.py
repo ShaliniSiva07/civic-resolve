@@ -71,7 +71,7 @@ def add_cors(resp):
     resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
     return resp
 
-@app.route('/api/<path:p>', methods=['OPTIONS'])
+@app.route('/api/<path:p>', methods=['OPTIONS'], strict_slashes=False)
 def options(p):
     resp = app.make_response('')
     resp.headers['Access-Control-Allow-Origin']  = '*'
