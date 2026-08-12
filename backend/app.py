@@ -60,15 +60,14 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # ─── CORS MIDDLEWARE ──────────────────────────────────────────────────────────
 
-@app.before_request
-def handle_preflight():
-    if request.method == 'OPTIONS':
-        resp = app.make_response('')
-        resp.status_code = 204
-        resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-        resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-        return resp
+@app.route('/api/<path:path>', methods=['OPTIONS'])
+def handle_preflight(path):
+    resp = app.make_response('')
+    resp.status_code = 204
+    resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+    return resp
 
 
 @app.after_request
