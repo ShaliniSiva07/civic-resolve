@@ -59,25 +59,26 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # ─── CORS MIDDLEWARE ──────────────────────────────────────────────────────────
+
+@app.before_request
+def handle_preflight():
+    if request.method == 'OPTIONS':
+        resp = app.make_response('')
+        resp.status_code = 204
+        resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
+        return resp
+
+
 @app.after_request
 def add_cors(resp):
-    allowed = os.environ.get('ALLOWED_ORIGINS', '*')
-    origin = request.headers.get('Origin', '')
-    if allowed == '*' or origin in allowed.split(','):
-        resp.headers['Access-Control-Allow-Origin'] = origin or '*'
-    else:
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-    return resp
+    origin = request.headers.get('Origin', '*')
 
-@app.route('/api/<path:p>', methods=['OPTIONS'], strict_slashes=False)
-def options(p):
-    resp = app.make_response('')
-    resp.headers['Access-Control-Allow-Origin']  = '*'
+    resp.headers['Access-Control-Allow-Origin'] = origin
     resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     resp.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,PATCH,DELETE,OPTIONS'
-    resp.status_code = 204
+
     return resp
 
 # ─── DATABASE ─────────────────────────────────────────────────────────────────
